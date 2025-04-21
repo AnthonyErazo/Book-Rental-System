@@ -1,0 +1,26 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Estilos globales */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Estilos para las notificaciones */
+.error-snackbar {
+  background-color: #f44336;
+  color: white;
+}
+
+.success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Estilos para los iconos de Material */
+.mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}

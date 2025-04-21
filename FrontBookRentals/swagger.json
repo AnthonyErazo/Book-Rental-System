@@ -1,0 +1,2177 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Book Rentals API",
+    "description": "API para gestionar el alquiler de libros en una biblioteca.",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logeo de un usuario.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequestDto"
+              },
+              "example": {
+                "userName": "juanperez",
+                "password": "123456"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Token obtenido correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDtoGenericResponse"
+                },
+                "example": {
+                  "data": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                    "expirationDate": "2025-04-18T05:36:53.8011292Z"
+                  },
+                  "success": true,
+                  "message": "Login exitoso"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Credenciales inválidas o usuario no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Registro de un usuario.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequestDto"
+              },
+              "example": {
+                "userName": "juanperez",
+                "password": "123456"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Registro exitoso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Registro exitoso"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al registrarse (usuario ya existe o datos inválidos).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Cierre de sesion.",
+        "responses": {
+          "200": {
+            "description": "Sesion cerrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se encontro sesion activa.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/auth/logoutAll": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Cierre de todas las sesiones.",
+        "responses": {
+          "200": {
+            "description": "Sesiones cerradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se encontraron sesiones activas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/books": {
+      "get": {
+        "tags": [
+          "Books"
+        ],
+        "summary": "Obtiene una lista de libros con paginación.",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Nombre o ISBN a buscar (opcional).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número de página (opcional).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "recordsPerPage",
+            "in": "query",
+            "description": "Registros por página (opcional).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Libros obtenidos correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookResponseDtoICollectionGenericResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "bookId": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                      "name": "Cien años de soledad",
+                      "author": "Gabriel García Márquez",
+                      "isbn": "9781234567890",
+                      "status": true
+                    }
+                  ],
+                  "success": true,
+                  "message": "Lista de libros obtenida correctamente."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Books"
+        ],
+        "summary": "Crea un libro.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookRequestDto"
+              },
+              "example": {
+                "name": "Cien años de soledad",
+                "author": "Gabriel García Márquez",
+                "isbn": "9781234567890",
+                "status": true
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Libro creado correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidGenericResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al crear libro.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/books/{id}": {
+      "get": {
+        "tags": [
+          "Books"
+        ],
+        "summary": "Obtiene un libro.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del libro.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Libro obtenido correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookResponseDtoGenericResponse"
+                },
+                "example": {
+                  "data": {
+                    "bookId": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                    "name": "Cien años de soledad",
+                    "author": "Gabriel García Márquez",
+                    "isbn": "9781234567890",
+                    "status": true
+                  },
+                  "success": true,
+                  "message": "Libro obtenido correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Libro no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Books"
+        ],
+        "summary": "Actualizar parcialmente un libro.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del libro.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookUpdateRequestDto"
+              },
+              "example": {
+                "name": "Edición revisada",
+                "author": "Gabo",
+                "isbn": "9781234567891",
+                "status": false
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Libro actualizado correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Libro actualizado correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al actualizar libro.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Libro no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Books"
+        ],
+        "summary": "Elimina un libro.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del libro.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Libro eliminado correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Libro eliminado correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Libro no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/clients": {
+      "get": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "Obtiene una lista de clientes con paginación.",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Nombre o DNI a buscar (opcional).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número de página (opcional).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "recordsPerPage",
+            "in": "query",
+            "description": "Registros por página (opcional).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clientes obtenidos correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientResponseDtoICollectionGenericResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "clientId": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                      "names": "Juan",
+                      "lastNames": "Pérez",
+                      "dni": "12345678",
+                      "age": 30
+                    }
+                  ],
+                  "success": true,
+                  "message": "Lista de clientes obtenida correctamente."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "Crea un cliente.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClientRequestDto"
+              },
+              "example": {
+                "names": "Juan Carlos",
+                "lastNames": "Pérez Gómez",
+                "dni": "12345678",
+                "age": 30
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente creado correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidGenericResponse"
+                },
+                "example": {
+                  "data": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                  "success": true,
+                  "message": "Cliente creado correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al crear cliente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/clients/{id}": {
+      "get": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "Obtiene un cliente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del cliente.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente obtenido correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientResponseDtoGenericResponse"
+                },
+                "example": {
+                  "data": {
+                    "clientId": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                    "names": "Juan",
+                    "lastNames": "Pérez",
+                    "dni": "12345678",
+                    "age": 30
+                  },
+                  "success": true,
+                  "message": "Cliente obtenido correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "Actualizar parcialmente un cliente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del cliente.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClientUpdateRequestDto"
+              },
+              "example": {
+                "names": "Editado",
+                "lastNames": "Apellido Editado",
+                "dni": "87654321",
+                "age": 40
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente actualizado correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Cliente actualizado correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al actualizar cliente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "Elimina un cliente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del cliente.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente eliminado correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Cliente eliminado correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Obtiene una lista de órdenes con paginación.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número de página (opcional).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "recordsPerPage",
+            "in": "query",
+            "description": "Registros por página (opcional).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Órdenes obtenidas correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponseDtoICollectionGenericResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "7c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                      "registerTime": "2025-04-18T00:36:53",
+                      "status": true,
+                      "client": {
+                        "clientId": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                        "names": "Juan",
+                        "lastNames": "Pérez",
+                        "dni": "12345678",
+                        "age": 25
+                      },
+                      "books": [
+                        {
+                          "bookId": "6d52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                          "name": "Cien años de soledad",
+                          "author": "Gabriel García Márquez",
+                          "isbn": "9781234567890",
+                          "status": true
+                        }
+                      ]
+                    }
+                  ],
+                  "success": true,
+                  "message": "Lista de órdenes obtenida correctamente."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Crea una nueva orden.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderRequestDto"
+              },
+              "example": {
+                "clientId": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                "bookIds": [
+                  "6d52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                  "7d52f3a7-f23b-4a13-8d3f-4be3d6efabcd"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Orden creada correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidGenericResponse"
+                },
+                "example": {
+                  "data": "7c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                  "success": true,
+                  "message": "Orden creada correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al crear la orden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/orders/client/{dni}/books": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Obtiene los libros prestados por un cliente usando su DNI.",
+        "parameters": [
+          {
+            "name": "dni",
+            "in": "path",
+            "description": "DNI del cliente.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Libros obtenidos correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookResponseDtoICollectionGenericResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "bookId": "6d52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                      "name": "Cien años de soledad",
+                      "author": "Gabriel García Márquez",
+                      "isbn": "9781234567890",
+                      "status": true
+                    }
+                  ],
+                  "success": true,
+                  "message": "Libros prestados obtenidos correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/orders/client/{clientId}/orders": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Obtiene las órdenes de un cliente específico.",
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "description": "Id del cliente.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Órdenes obtenidas correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderByClientResponseDtoICollectionGenericResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "7c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                      "registerTime": "2025-04-18T00:36:53",
+                      "status": true,
+                      "books": [
+                        {
+                          "bookId": "6d52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                          "name": "Cien años de soledad",
+                          "author": "Gabriel García Márquez",
+                          "isbn": "9781234567890",
+                          "status": true
+                        }
+                      ]
+                    }
+                  ],
+                  "success": true,
+                  "message": "Órdenes del cliente obtenidas correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/orders/book/{bookId}/orders": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Obtiene las órdenes de un libro específico.",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "description": "Id del libro.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Órdenes obtenidas correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderByBookResponseDtoICollectionGenericResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "7c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                      "registerTime": "2025-04-18T00:36:53",
+                      "status": true,
+                      "client": {
+                        "clientId": "5c52f3a7-f23b-4a13-8d3f-4be3d6efabcd",
+                        "names": "Juan",
+                        "lastNames": "Pérez",
+                        "dni": "12345678",
+                        "age": 25
+                      }
+                    }
+                  ],
+                  "success": true,
+                  "message": "Órdenes del libro obtenidas correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Libro no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/orders/{orderId}/status": {
+      "patch": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Actualiza el estado de una orden.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "Id de la orden.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orden actualizada correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Estado de la orden actualizado correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Orden no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/orders/{orderId}": {
+      "delete": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Elimina una orden.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "Id de la orden.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orden eliminada correctamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Orden eliminada correctamente."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Orden no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error en el servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado – El token no fue proporcionado o es inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseGenericResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthRequestDto": {
+        "required": [
+          "password",
+          "userName"
+        ],
+        "type": "object",
+        "properties": {
+          "userName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 60,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BaseGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BookRequestDto": {
+        "required": [
+          "author",
+          "isbn",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "author": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "isbn": {
+            "maxLength": 13,
+            "minLength": 10,
+            "pattern": "^\\d{10}(\\d{3})?$",
+            "type": "string"
+          },
+          "status": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BookResponseDto": {
+        "required": [
+          "author",
+          "bookId",
+          "isbn",
+          "name",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "bookId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "author": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "isbn": {
+            "maxLength": 13,
+            "minLength": 10,
+            "pattern": "^\\d{10}(\\d{3})?$",
+            "type": "string"
+          },
+          "status": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BookResponseDtoGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/BookResponseDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BookResponseDtoICollectionGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookResponseDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BookUpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "author": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "isbn": {
+            "maxLength": 13,
+            "minLength": 10,
+            "pattern": "^\\d{10}(\\d{3})?$",
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClientRequestDto": {
+        "required": [
+          "age",
+          "dni",
+          "lastNames",
+          "names"
+        ],
+        "type": "object",
+        "properties": {
+          "names": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "lastNames": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "dni": {
+            "maxLength": 8,
+            "minLength": 8,
+            "pattern": "^\\d{8}$",
+            "type": "string"
+          },
+          "age": {
+            "maximum": 120,
+            "minimum": 18,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClientResponseDto": {
+        "required": [
+          "age",
+          "clientId",
+          "dni",
+          "lastNames",
+          "names"
+        ],
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "names": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "lastNames": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "dni": {
+            "maxLength": 8,
+            "minLength": 8,
+            "pattern": "^\\d{8}$",
+            "type": "string"
+          },
+          "age": {
+            "maximum": 120,
+            "minimum": 18,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClientResponseDtoGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ClientResponseDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClientResponseDtoICollectionGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClientResponseDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClientUpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "lastNames": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "dni": {
+            "maxLength": 8,
+            "minLength": 8,
+            "type": "string",
+            "nullable": true
+          },
+          "age": {
+            "maximum": 120,
+            "minimum": 18,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GuidGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginResponseDto": {
+        "required": [
+          "expirationDate",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginResponseDtoGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoginResponseDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderByBookResponseDto": {
+        "required": [
+          "client",
+          "id",
+          "registerTime",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "registerTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientResponseDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderByBookResponseDtoICollectionGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderByBookResponseDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderByClientResponseDto": {
+        "required": [
+          "books",
+          "id",
+          "registerTime",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "registerTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "books": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookResponseDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderByClientResponseDtoICollectionGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderByClientResponseDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderRequestDto": {
+        "required": [
+          "bookIds",
+          "clientId"
+        ],
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bookIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderResponseDto": {
+        "required": [
+          "books",
+          "client",
+          "id",
+          "registerTime",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "registerTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientResponseDto"
+          },
+          "books": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookResponseDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderResponseDtoICollectionGenericResponse": {
+        "required": [
+          "message",
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderResponseDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme.  \r\n                        Enter your token below.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

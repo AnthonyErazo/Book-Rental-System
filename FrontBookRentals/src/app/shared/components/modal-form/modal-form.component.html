@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>{{title}}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-container">
+      <mat-form-field *ngFor="let field of fields">
+        <mat-label>{{field.label}}</mat-label>
+        <input 
+          matInput 
+          [formControlName]="field.name"
+          [type]="field.type"
+          required>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()">Guardar</button>
+</mat-dialog-actions>
