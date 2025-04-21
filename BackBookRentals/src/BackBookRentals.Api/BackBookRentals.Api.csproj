@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>bin\Debug\net9.0\BackBookRentals.Api.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+	  <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="9.0.3" />
+	  <PackageReference Include="microsoft.entityframeworkcore.tools" Version="9.0.3">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+	  </PackageReference>
+	  <PackageReference Include="microsoft.aspnetcore.authentication.jwtbearer" Version="9.0.1" />
+	  <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackBookRentals.Persistence\BackBookRentals.Persistence.csproj" />
+    <ProjectReference Include="..\BackBookRentals.Repositories\BackBookRentals.Repositories.csproj" />
+    <ProjectReference Include="..\BackBookRentals.Services\BackBookRentals.Services.csproj" />
+  </ItemGroup>
+
+</Project>
