@@ -11,6 +11,6 @@ public static class HttpContextExtensions
             throw new ArgumentNullException(nameof(httpContext));
 
         var totalRecords = await queryable.CountAsync();
-        httpContext.Response.Headers.Add("TotalRecordsQuantity", totalRecords.ToString());
+        httpContext.Response.Headers.Append("TotalRecordsQuantity", totalRecords.ToString());
     }
 }

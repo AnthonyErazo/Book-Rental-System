@@ -21,10 +21,10 @@ export class ClientsService {
     }
 
 
-    async getClients(page: number = 1, recordsPerPage: number = 10): Promise<ClientResponseDtoICollectionGenericResponse> {
+    async getClients(page: number = 1, recordsPerPage: number = 10, search: string = ''): Promise<ClientResponseDtoICollectionGenericResponse> {
         try {
             const response = await firstValueFrom(
-                this.apiClientsService.apiClientsGet('', page, recordsPerPage)
+                this.apiClientsService.apiClientsGet(search, page, recordsPerPage)
             );
             return response;
         } catch (error: any) {

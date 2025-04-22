@@ -2,11 +2,11 @@
 
 public class AppSettings
 {
-    public Jwt Jwt { get; set; }
+    public required Jwt Jwt { get; set; }
 }
 
 public class Jwt
 {
-    public string JWTKey { get; set; }
-    public int LifetimeInSeconds { get; set; }
+    public required string JWTKey { get; set; }
+    public required int LifetimeInSeconds { get; set; }
 }

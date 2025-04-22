@@ -6,9 +6,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApiModule, Configuration } from './api-client';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
-// Determinar si estamos en Docker o no
-const isDocker = process.env['DOCKER'] === 'true';
-const backendUrl = isDocker ? 'http://host.docker.internal:7202' : 'http://localhost:7202';
+const backendUrl = 'https://localhost:7202';
 
 export const appConfig: ApplicationConfig = {
   providers: [

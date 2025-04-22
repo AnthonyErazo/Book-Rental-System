@@ -3,26 +3,9 @@
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
 }
 
-table {
-  width: 100%;
-}
-
-.mat-elevation-z8 {
-  margin-top: 20px;
-}
-
-.mat-column-actions {
-  width: 80px;
-  text-align: center;
-}
-
-/* Estilos para la creación de orden */
 .order-creation {
   display: flex;
   flex-direction: column;
@@ -37,50 +20,6 @@ table {
 
 .selected-card {
   margin-bottom: 10px;
-}
-
-.selected-books {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.selection-section {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.search-field {
-  width: 100%;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-/* Estilos para las tarjetas de selección */
-mat-card {
-  margin-bottom: 10px;
-}
-
-mat-card-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Estilos para la selección de libros */
-.books-selection {
-  display: flex;
-  gap: 20px;
-}
-
-.available-books {
-  flex: 2;
 }
 
 .selected-books-list {
@@ -122,7 +61,16 @@ mat-card-content {
   font-size: 0.9em;
 }
 
-/* Estilos para la tabla de libros */
+.selection-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.search-field {
+  width: 100%;
+}
+
 table {
   width: 100%;
   margin-top: 20px;
@@ -131,4 +79,11 @@ table {
 .mat-column-select {
   width: 120px;
   text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }

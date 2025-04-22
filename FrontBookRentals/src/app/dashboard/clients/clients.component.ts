@@ -27,7 +27,7 @@ import { ClientRequestDto, ClientResponseDto, ClientUpdateRequestDto } from '../
 })
 export class ClientsComponent implements OnInit {
   displayedColumns: string[] = ['names', 'lastNames', 'dni', 'age', 'actions'];
-  dataSource: any[] = [];
+  dataSource: ClientResponseDto[] = [];
   totalItems = 0;
   pageSize = 10;
   currentPage = 0;

@@ -1,0 +1,48 @@
+<div class="search-container">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Buscar libros por DNI</mat-label>
+    <input matInput [(ngModel)]="searchDni" (keyup.enter)="searchClientBooks()" placeholder="Ingrese DNI del cliente" maxlength="8">
+    <button mat-icon-button matSuffix (click)="searchClientBooks()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <div *ngIf="clientInfo" class="client-info">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Información del Cliente</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Nombre:</strong> {{clientInfo.names}} {{clientInfo.lastNames}}</p>
+        <p><strong>DNI:</strong> {{clientInfo.dni}}</p>
+        <p><strong>Edad:</strong> {{clientInfo.age}}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="hasSearched && clientInfo" class="results-container">
+    <h3>Libros Prestados por el Cliente</h3>
+    <div *ngIf="clientBooks.length === 0" class="no-books-message">
+      <p>No hay libros rentados para este cliente</p>
+    </div>
+    <table *ngIf="clientBooks.length > 0" mat-table [dataSource]="clientBooks" class="mat-elevation-z8">
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef> Título </th>
+        <td mat-cell *matCellDef="let book"> {{book.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="author">
+        <th mat-header-cell *matHeaderCellDef> Autor </th>
+        <td mat-cell *matCellDef="let book"> {{book.author}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isbn">
+        <th mat-header-cell *matHeaderCellDef> ISBN </th>
+        <td mat-cell *matCellDef="let book"> {{book.isbn}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

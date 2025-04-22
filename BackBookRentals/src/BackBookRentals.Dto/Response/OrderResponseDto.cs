@@ -16,8 +16,8 @@ public class OrderResponseDto
     public bool Status { get; set; }
     [Required]
     [SwaggerSchema(Description = "Cliente de la orden.")]
-    public ClientResponseDto Client { get; set; }
+    public required ClientResponseDto Client { get; set; }
     [Required]
     [SwaggerSchema(Description = "Libros de la orden.")]
-    public ICollection<BookResponseDto> Books { get; set; }
+    public required ICollection<BookResponseDto> Books { get; set; }
 }

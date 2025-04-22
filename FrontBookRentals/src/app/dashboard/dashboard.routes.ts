@@ -20,6 +20,10 @@ export const dashboardRoutes: Routes = [
       { 
         path: 'books',
         loadChildren: () => import('./books/books.routes').then(m => m.booksRoutes)
+      },
+      {
+        path: 'client-books-search',
+        loadComponent: () => import('./client-books-search/client-books-search.component').then(m => m.ClientBooksSearchComponent)
       }
     ]
   }

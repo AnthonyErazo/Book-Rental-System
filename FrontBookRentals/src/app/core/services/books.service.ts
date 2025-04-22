@@ -18,14 +18,14 @@ export class BooksService {
     ) {
     }
 
-    async getBooks(): Promise<BookResponseDtoICollectionGenericResponse> {
+    async getBooks(search: string = '', page: number = 1, recordsPerPage: number = 10): Promise<BookResponseDtoICollectionGenericResponse> {
         try {
 
             const response = await firstValueFrom(
                 this.apiBooksService.apiBooksGet(
-                    '',
-                    1,
-                    10,
+                    search,
+                    page,
+                    recordsPerPage,
                     'body',
                     false,
                     { httpHeaderAccept: 'application/json' }
