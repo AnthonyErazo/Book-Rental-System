@@ -1,6 +1,5 @@
 # BackBookRentals - Backend
 
-## Descripción
 Backend para el sistema de alquiler de libros desarrollado en .NET 9.0. Este proyecto implementa una API RESTful que permite gestionar clientes, libros y órdenes de alquiler.
 
 ## Características
@@ -44,60 +43,77 @@ BackBookRentals/
 dotnet ef database update
 ```
 
+## Configuración Local
+Para ejecutar el proyecto localmente:
+
+1. Navegar al directorio del proyecto API:
+```bash
+cd src/BackBookRentals.Api
+```
+
+2. Ejecutar el proyecto en modo desarrollo:
+```bash
+dotnet run --environment Development
+```
+
 ## Docker Compose
 El proyecto incluye un archivo `docker-compose.yml` para facilitar el despliegue. Contiene:
 - SQL Server
 - Backend API
+- Adminer (Gestor de base de datos)
 
 ### Requisitos
 - Docker Desktop
 - Docker Compose
 
 ### Pasos para ejecutar con Docker Compose
-1. Construir las imágenes:
+1. Construir las imágenes e iniciar contenedores:
 ```bash
-docker-compose build
+docker-compose up --build
 ```
 
-2. Iniciar los contenedores:
-```bash
-docker-compose up -d
-```
-
-3. Verificar que los contenedores estén ejecutándose:
+2. Verificar que los contenedores estén ejecutándose:
 ```bash
 docker-compose ps
 ```
 
-4. Para detener los contenedores:
+3. Para detener los contenedores:
 ```bash
 docker-compose down
 ```
 
-### Variables de entorno
-El archivo `docker-compose.yml` utiliza las siguientes variables de entorno:
-```yaml
-environment:
-  - ASPNETCORE_ENVIRONMENT=Development
-  - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=BackBookRentals;User=sa;Password=Your_password123;TrustServerCertificate=True;
-  - JWT__SecretKey=your-secret-key-here
-  - JWT__Issuer=BackBookRentals
-  - JWT__Audience=BackBookRentals
-```
-
-### Puertos expuestos
-- API: 7202
+### Puertos expuestos con Docker Compose
+- API: 5000
 - SQL Server: 1433
+- Adminer: 8081
+
+### Acceso a Adminer
+Adminer es una interfaz web ligera para gestionar bases de datos. Para acceder y configurar la conexión a la base de datos:
+
+1. Abre http://localhost:8081 en tu navegador
+2. Configura la conexión con los siguientes datos:
+   - Sistema: Microsoft SQL Server (MS SQL)
+   - Servidor: sqlserver
+   - Usuario: SA
+   - Contraseña: P@ssw0rd123
+   - Base de datos: BookRentals
+
+Una vez conectado, podrás:
+- Ver y gestionar las tablas de la base de datos
+- Ejecutar consultas SQL
+- Importar/exportar datos
+- Gestionar usuarios y permisos
+- Ver la estructura de la base de datos
 
 ### Acceso a la API
 Una vez que los contenedores estén ejecutándose, la API estará disponible en:
 ```
-http://localhost:7202
+http://localhost:5000
 ```
 
 La documentación de Swagger estará disponible en:
 ```
-http://localhost:7202/swagger
+http://localhost:5000/swagger
 ```
 
 ## Endpoints Principales
@@ -121,23 +137,3 @@ http://localhost:7202/swagger
 - `GET /api/orders/book/{bookId}/orders` - Obtener órdenes por libro
 - `PATCH /api/orders/{orderId}/status` - Actualizar estado de orden
 - `DELETE /api/orders/{orderId}` - Eliminar orden
-
-## Autenticación
-La API utiliza autenticación JWT. Para acceder a los endpoints protegidos:
-1. Obtener token de autenticación
-2. Incluir el token en el header de las peticiones:
-```
-Authorization: Bearer <token>
-```
-
-## Documentación
-La documentación de la API está disponible en Swagger UI:
-```
-https://localhost:7202/swagger
-```
-
-## Pruebas
-Para ejecutar las pruebas unitarias:
-```bash
-dotnet test
-```

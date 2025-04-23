@@ -6,7 +6,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApiModule, Configuration } from './api-client';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
-const backendUrl = 'https://localhost:7202';
+const backendUrl = 'http://localhost:5000';
 
 export const appConfig: ApplicationConfig = {
   providers: [
